@@ -1,46 +1,50 @@
-<?php
-require_once 'config/db.php';
-require_once 'admin/models/Product.php';
-
-$db = (new Database())->getConnection();
-$product = new Product($db);
-$destacados = $product->getAll(); // Obtener todos los productos
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio - Tienda de Semillas</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Gestionar Pedidos - Tienda de Semillas</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <?php include 'includes/header.php'; ?>
-    <main>
-        <div class="container mt-5">
-            <h2>Productos Disponibles</h2>
-            <div class="row">
-                <?php if ($destacados->num_rows > 0): ?>
-                    <?php while ($row = $destacados->fetch_assoc()): ?>
-                        <div class="col-md-4">
-                            <div class="card mb-4">
-                                <img class="card-img-top" src="img/<?php echo $row['imagen']; ?>" alt="<?php echo $row['nombre']; ?>" style="border: 1px solid #ddd; padding: 10px;">
-                                <div class="card-body">
-                                    <h5 class="card-title"><?php echo $row['nombre']; ?></h5>
-                                    <p class="card-text" style="border: 1px solid #ddd; padding: 10px;"><?php echo $row['descripcion']; ?></p>
-                                    <p class="card-text" style="border: 1px solid #ddd; padding: 10px;">Precio: $<?php echo $row['precio']; ?></p>
-                                    <a href="carrito.php?add=<?php echo $row['id']; ?>" class="btn btn-primary">Comprar</a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endwhile; ?>
+    <div class="container mt-5">
+        <h2>Gestionar Pedidos</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID Usuario</th>
+                    <th>ID Producto</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($orders)): ?>
+                    <?php foreach ($orders as $order): ?>
+                        <tr>
+                            <td><?php echo $order['id']; ?></td>
+                            <td><?php echo $order['usuario_id']; ?></td>
+                            <td><?php echo $order['producto_id']; ?></td>
+                            <td><?php echo $order['cantidad']; ?></td>
+                            <td><?php echo $order['total']; ?></td>
+                            <td><?php echo $order['fecha']; ?></td>
+                            <td>
+                                <a href="/admin/controllers/OrderController.php?action=edit&id=<?php echo $order['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="/admin/controllers/OrderController.php?action=delete&id=<?php echo $order['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 <?php else: ?>
-                    <p>No hay productos disponibles.</p>
+                    <tr>
+                        <td colspan="7">No hay pedidos disponibles.</td>
+                    </tr>
                 <?php endif; ?>
-            </div>
-        </div>
-    </main>
-    <?php include 'includes/footer.php'; ?>
+            </tbody>
+        </table>
+        <a href="/admin/index.php" class="btn btn-secondary">Volver al Panel de Control</a>
+    </div>
 </body>
 </html>
